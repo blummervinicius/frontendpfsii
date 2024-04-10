@@ -127,26 +127,7 @@ export default function FormVeiculo(props) {
             />
           </Col>
         </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>
-            Reservas
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Select
-              id="reserva"
-              value={veiculo.reserva}
-              onChange={handleChange}
-            >
-              <option value="">Selecione para Vincular a Reserva ao Veículo</option>
-              {reservasDisponiveis.map((reserva) => (
-                <option key={reserva.res_codigoR} value={reserva.res_codigoR}>
-                  {reserva.cliente} - {reserva.res_periodoIn} a{" "}
-                  {reserva.res_periodoFin}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-        </Form.Group>
+      
         <Stack direction="horizontal" gap={3} className="mt-3">
           <Button variant="primary" type="submit">
             Cadastrar

@@ -3,11 +3,11 @@ import { Container } from "react-bootstrap";
 import { urlBackend } from "../assets/funcoes";
 import FormVeiculo from "../fomularios/FormVeiculos";
 import Pagina from "../templates/Pagina";
-import TabVeiculos from "../tabelas/TabVeiculos"; 
+import TabVeiculos from "../tabelas/TabVeiculos";
 
 export default function CadVeiculos() {
-  const [exibirTabela, setExibirTabela] = useState(true); 
-  const [veiculo, setVeiculo] = useState([]); 
+  const [exibirTabela, setExibirTabela] = useState(true);
+  const [veiculo, setVeiculo] = useState([]);
 
   useEffect(() => {
     buscarVeiculos();
@@ -25,10 +25,10 @@ export default function CadVeiculos() {
   return (
     <Pagina>
       <Container>
-        {exibirTabela ? ( 
+        {exibirTabela ? (
           <TabVeiculos listaVeiculos={veiculo} exibirTabela={setExibirTabela} />
         ) : (
-          <FormVeiculo 
+          <FormVeiculo
             buscarVeiculos={buscarVeiculos}
             exibirTabela={setExibirTabela}
           />

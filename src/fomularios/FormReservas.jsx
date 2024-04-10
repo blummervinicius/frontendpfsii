@@ -5,14 +5,18 @@ import SeletorClientes from "./SeletorCliente";
 
 export default function FormReservasC(props) {
   const [reserva, setReserva] = useState({
-    cli_codigoC: "",
-    res_periodoIn: "",
-    res_periodoFin: "",
-    res_quantidade: "",
-    res_valor: "",
+    codigoR:"",
+    periodoIn:"",
+    periodoFin:"",
+    quantidade:"",
+    valor:"",
+    codigoC:"",
   });
+  const [setData] = useState([])
   const [validated, setValidated] = useState(false);
   //const [clienteSelecionado, setClienteSelecionado] = useState(null);
+
+  //const [cliente, setCliente] = useState([])
 
   function handleChange(e) {
     const { id, value } = e.target;
@@ -23,61 +27,76 @@ export default function FormReservasC(props) {
   //     setClienteSelecionado(clienteCodigoC);
   //   }
 
-  function handleSubmit(event) {
-    const form = event.currentTarget;
+  function handleSubmit(evento) {
+    const form = evento.currentTarget;
     if (form.checkValidity()) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      //reserva.cli_codigoC = clienteSelecionado || null;
-
-      const requestOptions = {
-        method: props.modoEdicao ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reserva),
-      };
-
-      fetch(urlBackend + "/reservasC", requestOptions)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status) {
-            props.setModoEdicao(false);
-            props.buscarReservas();
-            props.exibirTabela(true);
-          }
-          window.alert(data.mensagem);
+      if(!props.modoEdicao){
+        fetch(urlBackend + "/reservasC", {
+          method: "POST",
+          headers: {"Content-type": "application/json"},
+          body: JSON.stringify(reserva)
         })
-        .catch((error) => {
-          window.alert("Erro ao executar a requisição: " + error.message);
-        });
-
-      setValidated(false);
-    } else {
-      setValidated(true);
+        .then((resposta) => {
+          return resposta.json()
+        })
+        .then((data) => {
+          if (data.status){
+            props.setModoEdicao(false)
+            let novaLista = props.listaReserva;
+            novaLista.push(reserva)
+            props.setReserva(novaLista)
+            props.buscarReserva()
+            props.exibirTabela(true)
+            setData(novaLista);
+          }
+          window.alert(data.mensagem)
+        })
+        .catch((erro) => {
+          window.alert('Erro ao executar a requisição: ' + erro.message)
+        })
+      }else{
+        fetch(urlBackend + "/reservasC" ,{
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+        body: JSON.stringify(reserva)
+        })
+        .then((resposta) => {
+          return resposta.json()
+        }).then((data) => {
+          if (data.status){
+            props.setModoEdicao(false)
+            let novaLista = props.listaReserva;
+            novaLista.push(reserva)
+            props.setReserva(novaLista)
+            props.buscarReserva()
+            props.exibirTabela(true)
+            setData(novaLista);
+          }
+          window.alert(data.mensagem)
+        })
+      }
+      setValidated(false)      
+    }else{
+      setValidated(true)
     }
-  }
+    evento.preventDefault();
+    evento.stopPropagation()
 
+  }
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
       <Form.Group as={Row} className="mb-3">
-        <Form.Label column sm={2}>
-          Cliente
-        </Form.Label>
-        <Col sm={10}>
-          <SeletorClientes
-            onChange={(clienteCodigoC) =>
-              setReserva({ ...reserva, cli_codigoC: clienteCodigoC })
-            }
-          />
-        </Col>
+
         <Form.Label column sm={2}>
           Período Inicial
         </Form.Label>
         <Col sm={4}>
           <Form.Control
             type="date"
-            id="res_periodoIn"
-            value={reserva.res_periodoIn}
+            id="periodoIn"
+            value={reserva.periodoIn}
             onChange={handleChange}
             required
           />
@@ -92,8 +111,8 @@ export default function FormReservasC(props) {
         <Col sm={4}>
           <Form.Control
             type="date"
-            id="res_periodoFin"
-            value={reserva.res_periodoFin}
+            id="periodoFin"
+            value={reserva.periodoFin}
             onChange={handleChange}
             required
           />
@@ -110,8 +129,8 @@ export default function FormReservasC(props) {
         <Col sm={4}>
           <Form.Control
             type="number"
-            id="res_quantidade"
-            value={reserva.res_quantidade}
+            id="quantidade"
+            value={reserva.quantidade}
             onChange={handleChange}
             required
           />
@@ -127,8 +146,8 @@ export default function FormReservasC(props) {
           <Form.Control
             type="int"
             // step="0.01"
-            id="res_valor"
-            value={reserva.res_valor}
+            id="valor"
+            value={reserva.valor}
             onChange={handleChange}
             required
           />
@@ -137,6 +156,17 @@ export default function FormReservasC(props) {
           </Form.Control.Feedback>
         </Col>
       </Form.Group>
+
+      <Form.Label column sm={2}>
+          Cliente
+        </Form.Label>
+        <Col sm={10}>
+          <SeletorClientes
+            onChange={(clienteCodigoC) =>
+              setReserva({ ...reserva, cliente: clienteCodigoC })
+            }
+          />
+        </Col>
 
       <Stack direction="horizontal" gap={3} className="mt-3">
         <Button variant="primary" type="submit">

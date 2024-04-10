@@ -1,18 +1,49 @@
 import {
   Button,
   Container,
-  FormControl,
+  FormControl, //comentei
   InputGroup,
   Table,
 } from "react-bootstrap";
 import { RiSearchLine } from "react-icons/ri";
 import { urlBackend } from "../assets/funcoes";
 
+
+
+
 export default function TabelaCliente(props) {
+  // const [cliente, setCliente] = useState([]);
+
+  // useEffect(()=> {
+  //   buscarCliente();  
+  // }, [])
+
+  // const buscarCliente = () => {
+  //   fetch(urlBackend + "/cliente", {method: "GET"})
+  //   .then((resposta) => {return resposta.json()})
+  //   .then((data) => {
+  //     setCliente(data);
+  //   })
+  //   .catch((error) => console.error('Erro ao buscar clientes:' , error));
+  // };
+
+  // const filtrarCliente = (termoBusca) => {
+  //   const resultadoBusca = cliente.filter((cliente) =>
+  //     cliente.nome.toLowerCase().includes(termoBusca.toLowerCase())
+  //   );
+  //   return resultadoBusca;
+  // };
+
+  // const handleBuscaChange = (e) => {
+  //   const termoBusca = e.currentTarget.value;
+  //   const resultadoBusca = filtrarCliente(termoBusca);
+  //   props.setCliente(resultadoBusca);
+  // };
+
   function filtrarCliente(e) {
     const termoBusca = e.currentTarget.value;
     fetch(urlBackend + "/cliente", { method: "GET" })
-      .then((resposta) => resposta.json())
+      .then((resposta) => {return resposta.json()})
       .then((listaCliente) => {
         if (Array.isArray(listaCliente)) {
           const resultadoBusca = listaCliente.filter((cliente) =>
@@ -27,7 +58,7 @@ export default function TabelaCliente(props) {
     <Container>
       <Button onClick={() => props.exibirTabela(false)}>Novo Cadastro</Button>
       <InputGroup className="mt-2">
-        <FormControl
+        <FormControl 
           type="text"
           id="termobusca"
           placeholder="Buscar"
@@ -104,9 +135,9 @@ export default function TabelaCliente(props) {
           </tbody>
         ) : (
           <tbody>
-            <tr>
-              <td colSpan={5}>Nenhum cliente encontrado</td>
-            </tr>
+            {/* <tr>
+              <td colSpan={4}>Nenhum cliente encontrado</td>
+            </tr> */}
           </tbody>
         )}
       </Table>

@@ -38,6 +38,11 @@ export default function Menu() {
               <LinkContainer to="cadastroVeiculo">
                 <NavDropdown.Item>Cadastro Veículo</NavDropdown.Item>
               </LinkContainer>
+              <br/>
+              <br/>
+              <LinkContainer to="vincularreservaveiculo">
+                <NavDropdown.Item>Vincular Res/vei</NavDropdown.Item>
+              </LinkContainer>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

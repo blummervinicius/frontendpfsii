@@ -7,15 +7,15 @@ import Pagina from "../templates/Pagina";
 
 export default function CadReservas() {
   const [exibirTabela, setExibirTabela] = useState(true);
-  const [reservas, setReservas] = useState([]);
+  const [reserva, setReserva] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [reservaEdicao, setReservaEdicao] = useState({
     codigoR: "",
-    cliente: "",
     periodoIn: "",
     periodoFin: "",
     quantidade: "",
     valor: "",
+    codigoC:" ",
   });
 
   function prepararTela(reserva) {
@@ -43,9 +43,9 @@ export default function CadReservas() {
   function buscarReservas() {
     fetch(urlBackend + "/reservasC", { method: "GET" })
       .then((resposta) => resposta.json())
-      .then((dados) => {
-        if (Array.isArray(dados)) {
-          setReservas(dados);
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setReserva(data);
         }
       })
       .catch((error) => {
@@ -56,6 +56,10 @@ export default function CadReservas() {
   useEffect(() => {
     buscarReservas();
   }, []);
+  useEffect(() => {
+    console.log("Reservas Atualizadas: ", reserva);
+
+  }, [reserva]);
 
   return (
     <Pagina>
@@ -63,7 +67,7 @@ export default function CadReservas() {
         <Alert variant="secondary">Cadastro de Reservas</Alert>
         {exibirTabela ? (
           <TabReservas
-            listaReservas={reservas}
+            listaReservas={reserva}
             exibirTabela={setExibirTabela}
             editar={prepararTela}
             deletar={deletarReserva}

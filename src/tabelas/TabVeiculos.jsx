@@ -21,9 +21,13 @@ export default function TabVeiculos(props) {
   const [veiculoSelecionado, setVeiculoSelecionado] = useState(null);
   const [exibirFormCadastro, setExibirFormCadastro] = useState(false);
 
-  useEffect(() => {
-    buscarVeiculos();
-  }, []);
+ useEffect(() => {
+  if (Array.isArray(props.listaVeiculos)) {
+    setVeiculos(props.listaVeiculos);
+  } else {
+    console.error("Os dados de veículos não são um array:", props.listaVeiculos);
+  }
+}, [props.listaVeiculos]);
 
   const buscarVeiculos = () => {
     fetch(urlBackend + "/veiculo")
@@ -95,8 +99,8 @@ export default function TabVeiculos(props) {
       .then((listaVeiculos) => {
         if (Array.isArray(listaVeiculos)) {
           const resultadoBusca = listaVeiculos.filter((veiculo) =>
-            veiculo.toLowerCase.includ(termoBusca.toLowerCase())
-          );
+            veiculo.modelo.toLowerCase().includes(termoBusca.toLowerCase())
+          ); //código anterior: veiculo.toLowerCase.includ(termoBusca.toLowerCase()));
           setVeiculos(resultadoBusca);
         }
       });
@@ -144,8 +148,8 @@ export default function TabVeiculos(props) {
         </thead>
         <tbody>
           {veiculos.map((veiculo) => (
-            <tr key={veiculo.vei_codigoV}>
-              <td>{veiculo.vei_codigoV}</td>
+            <tr key={veiculo.codigoV}>
+              <td>{veiculo.codigoV}</td>
               <td>{veiculo.modelo}</td>
               <td>{veiculo.ano}</td>
               <td>{veiculo.placa}</td>
@@ -158,7 +162,7 @@ export default function TabVeiculos(props) {
                 </Button>{" "}
                 <Button
                   variant="outline-danger"
-                  onClick={() => handleExcluir(veiculo.vei_codigoV)}
+                  onClick={() => handleExcluir(veiculo.codigoV)}
                 >
                   Excluir
                 </Button>

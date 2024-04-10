@@ -7,48 +7,79 @@ import { urlBackend } from "../assets/funcoes";
 
 export default function TelaCadCliente() {
   const [exibirTabela, setExibirTabela] = useState(true);
-  const [cliente, setCliente] = useState({
-    nome: "",
-    cpf: "",
-    telefone: "",
-  });
+  const [cliente, setCliente] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [editCliente, setEditCliente] = useState({
-    nome: "",
-    cpf: "",
-    telefone: "",
-  });
+  // const [editCliente] = useState((false));
 
-  function preparaTela(cliente) {
+  useEffect(() => {
+    fetchClientes();
+  }, []);
+
+  function fetchClientes() {
+    fetch(urlBackend + "/cliente")
+      .then((resposta) => resposta.json())
+      .then((data) => {
+        setCliente(data);
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar clientes:', error);
+      });
+  }
+
+  function handleEditar() {
     setModoEdicao(true);
-    setEditCliente(cliente);
     setExibirTabela(false);
   }
 
-  function excluirCliente(cliente) {
+  function handleExcluir(cliente) {
     fetch(urlBackend + "/cliente", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cliente),
-    }).then((resposta) => {
-      window.alert("Cliente excluído com sucesso!");
-      return resposta.json();
+    })
+    .then((resposta) => resposta.json())
+    .then((data) => {
+      if (data.status) {
+        fetchClientes(); // Atualiza a lista de clientes após a exclusão
+      }
+      window.alert(data.mensagem);
+    })
+    .catch((error) => {
+      window.alert("Erro ao excluir cliente: " + error.message);
     });
   }
 
-  useEffect(() => {
-    fetch(urlBackend + "/cliente", {
-      method: "GET",
-    })
-      .then((resposta) => {
-        return resposta.json();
-      })
-      .then((dados) => {
-        if (Array.isArray(dados)) {
-          setCliente(dados);
-        }
-      });
-  }, []);
+
+  // function preparaTela(cliente) {
+  //   setModoEdicao(true);
+  //   setEditCliente(cliente);
+  //   setExibirTabela(false);
+  // }
+
+  // function excluirCliente(cliente) {
+  //   fetch(urlBackend + "/cliente", {
+  //     method: "DELETE",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(cliente),
+  //   }).then((resposta) => {
+  //     window.alert("Cliente excluído com sucesso!");
+  //     return resposta.json();
+  //   });
+  // }
+
+  // useEffect(() => {
+  //   fetch(urlBackend + "/cliente", {
+  //     method: "GET",
+  //   })
+  //     .then((resposta) => {
+  //       return resposta.json();
+  //     })
+  //     .then((dados) => {
+  //       if (Array.isArray(dados)) {
+  //         setCliente(dados);
+  //       }
+  //     });
+  // }, []);
 
   return (
     <Pagina>
@@ -59,8 +90,8 @@ export default function TelaCadCliente() {
             listaCliente={cliente}
             setCliente={setCliente}
             exibirTabela={setExibirTabela}
-            editar={preparaTela}
-            excluir={excluirCliente}
+            editar={handleEditar}
+            excluir={handleExcluir}
           />
         ) : (
           <FormCliente
@@ -69,8 +100,7 @@ export default function TelaCadCliente() {
             exibirTabela={setExibirTabela}
             modoEdicao={modoEdicao}
             setModoEdicao={setModoEdicao}
-            editar={preparaTela}
-            pessoa={editCliente}
+           
           />
         )}
       </Container>

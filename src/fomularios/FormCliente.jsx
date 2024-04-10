@@ -1,71 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, Button, Col, Row, Stack } from "react-bootstrap";
 import { urlBackend } from "../assets/funcoes";
+//import SearchBar from "../templates/searchbar/Searchbar" //adicionei
 
 function FormCliente(props) {
-  const [cliente, setCliente] = useState({});
+  const [cliente, setCliente] = useState({ nome: '', cpf: '', telefone: ''});
   const [validated, setValidated] = useState(false);
+  
+
+  useEffect(() => {
+    fetch(urlBackend + "/cliente", {method: "GET"})
+    .then((resposta) => {
+      return resposta.json();
+    }).then((data) =>{
+      setCliente(data);
+    });
+  },[]);
+
 
   function handleChange(e) {
     const { id, value } = e.target;
     setCliente({ ...cliente, [id]: value });
   }
 
+  
   function handleSubmit(event) {
     event.preventDefault();
+    event.stopPropagation();
+
     const form = event.currentTarget;
+    setValidated(true);
 
     if (form.checkValidity()) {
-      if (!props.modoEdicao) {
-        fetch(urlBackend + "/cliente", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(cliente),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status) {
-              props.setModoEdicao(false);
-              props.setClientes([...props.cliente, cliente]);
-              props.exibirTabela(true);
-            }
-            window.alert(data.mensagem);
-          })
-          .catch((error) => {
-            window.alert("Erro ao executar a requisição: " + error.message);
-          });
-      } else {
-        fetch(urlBackend + "/cliente", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(cliente),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status) {
-              props.setModoEdicao(false);
-              props.setCliente([...props.cliente, cliente]);
-              props.exibirTabela(true);
-            }
-            window.alert(data.mensagem);
-          })
-          .catch((error) => {
-            window.alert("Erro ao executar a requisição: " + error.message);
-          });
-      }
+      const url = props.modoEdicao ? urlBackend + "/cliente" : urlBackend + "/cliente";
+      const method = props.modoEdicao ? "PUT" : "POST";
 
-      setValidated(false);
-    } else {
-      setValidated(true);
+      fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cliente),
+      })
+        .then((resposta) => resposta.json())
+        .then((data) => {
+          if (data.status) {
+            props.setModoEdicao(false);
+            props.exibirTabela(true);
+            props.setCliente(data); // Atualiza o estado cliente com os novos dados
+          }
+          window.alert(data.mensagem);
+        })
+        .catch((error) => {
+          window.alert("Erro ao executar a requisição: " + error.message);
+        });
     }
   }
 
   return (
     <div>
+      
+
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Row>
           <Form.Group as={Col}>

@@ -9,12 +9,12 @@ import {
 import { RiSearchLine } from "react-icons/ri";
 import { urlBackend } from "../assets/funcoes";
 import FormReservasC from "../fomularios/FormReservas";
-//import FormVeiculo from "../fomularios/FormVeiculos"
+
 
 export default function TabReservas(props) {
-  const [reservas, setReservas] = useState(props.listaReservas);
+  const [reservas] = useState(props.listaReservas);
   const [exibirFormCadastro, setExibirFormCadastro] = useState(false);
-  //const { listaReservas, exibirTabela, editar, deletar } = props;
+  
 
   async function editarReserva(codigoR) {
     try {
@@ -55,21 +55,38 @@ export default function TabReservas(props) {
     setExibirFormCadastro(true);
   }
 
-
-
   function filtrarReservas(e) {
     const termoBusca = e.currentTarget.value;
     fetch(urlBackend + "/reservasC", { method: "GET" })
-      .then((resposta) => resposta.json())
-      .then((listaReservas) => {
-        if (Array.isArray(listaReservas)) {
-          const resultadoBusca = listaReservas.filter((reserva) =>
-            reserva.cliente.toLowerCase().includes(termoBusca.toLowerCase())
+      .then((resposta) => {return resposta.json()})
+      .then((listaReserva) => {
+        if (Array.isArray(listaReserva)) {
+          const resultadoBusca = listaReserva.filter(
+                (reserva) =>
+                reserva.codigoR.toLowerCase().includes(termoBusca.toLowerCase())
           );
-          setReservas(resultadoBusca);
-        }
-      });
+                  
+             props.setReservas(resultadoBusca);
+            }
+          });
+            
+      
   }
+  
+
+  // function filtrarReservas(e) {
+  //   const termoBusca = e.currentTarget.value;
+  //   fetch(urlBackend + "/reservasC", { method: "GET" })
+  //     .then((resposta) => resposta.json())
+  //     .then((listaReservas) => {
+  //       if (Array.isArray(listaReservas)) {
+  //         const resultadoBusca = listaReservas.filter((reserva) =>
+  //           reserva.cliente.nome.toLowerCase().includes(termoBusca.toLowerCase())
+  //         );
+  //         setReservas(resultadoBusca);
+  //       }
+  //     });
+  // }
 
   return (
     <Container>
@@ -103,13 +120,16 @@ export default function TabReservas(props) {
       <Table striped bordered hover size="sm" className="mt-5">
         <thead>
           <tr className="text-center">
-            <th className="text-center">Código</th>
-            <th className="text-center">Cliente</th>
+            <th className="text-center">Código Reserva</th>
             <th className="text-center">Período Inicial</th>
             <th className="text-center">Período Final</th>
             <th className="text-center">Quantidade</th>
             <th className="text-center">Valor</th>
-            <th className="text-center">Veículo</th>
+            <th className="text-center">Cliente</th>
+            <th className="text-center">Cliente/Código</th>
+            <th className="text-center">Cliente/Nome</th>
+            <th className="text-center">Cliente/CPF</th>
+            <th className="text-center">Cliente/Telefone</th>
             <th className="text-center">Ações</th>
           </tr>
         </thead>
@@ -117,12 +137,15 @@ export default function TabReservas(props) {
           {reservas.map((reserva) => (
             <tr key={reserva.codigoR}>
               <td>{reserva.codigoR}</td>
-              <td>{reserva.cliente.nome}</td>
               <td>{reserva.periodoIn}</td>
               <td>{reserva.periodoFin}</td>
               <td>{reserva.quantidade}</td>
               <td>{reserva.valor}</td>
-              <td>{reserva.veiculo.codigoV}</td>
+              <td>{reserva.cliente.codigoC}</td>
+              <td>{reserva.cliente.nome}</td>
+              <td>{reserva.cliente.cpf}</td>
+              <td>{reserva.cliente.telefone}</td>
+             
               <td className="text-center">
                 <Button
                   variant="outline-primary"
